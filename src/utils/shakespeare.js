@@ -5,12 +5,12 @@ const shakespeare = async (pokemonDescription) => {
 
   try {
     // Request to obtain species URL from inputted name
-    const translatedDescritpion = await axios.get(`${translateUrl}/${pokemonDescription}`);
-    // Request to obtain Pokemon description array
+    const translatedDescritpion = await axios.get(`${translateUrl}/${pokemonDescription.split('\n').join('')}`);
+    // Request to obtain Pokemon description array and removing escaped characters
     const cleanDescription = translatedDescritpion.data.contents.translated.replace(/\\n|\\f|\/|\"/g, ' ');
-    return [undefined, cleanDescription.trim()];
+    return cleanDescription.trim();
   } catch (e) {
-    return [e.response.statusText, undefined];
+    throw new Error(e.message);
   }
 };
 

@@ -1,23 +1,23 @@
 const pokemonForm = document.querySelector('form');
 const search = document.querySelector('input');
 
-const messageOne = document.querySelector('#message-1');
-const messageTwo = document.querySelector('#message-2');
+const pokemonName = document.querySelector('#name');
+const pokemonDescription = document.querySelector('#description');
 
 pokemonForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  // Use pokemon route to get description to display 
+  // Use pokemon route to get description to display
   fetch(`/pokemon/${search.value}`).then((response) => {
     response.json().then((data) => {
-      messageOne.textContent = '';
-      messageTwo.textContent = '';
+      pokemonName.textContent = '';
+      pokemonDescription.textContent = '';
       if (data.error) {
         // Display error if error occurs
-        messageOne.textContent = `Error: ${data.error}`;
+        pokemonName.textContent = `${data.error}`;
       } else {
         // Otherwise display the Pokemon name and description
-        messageOne.textContent = `Name: ${data.requestedPokemon}`;
-        messageTwo.textContent = `Description: ${data.shakespeareTranslated}`;
+        pokemonName.textContent = `Name: ${data.requestedPokemon}`;
+        pokemonDescription.textContent = `Description: ${data.shakespeareTranslated}`;
       }
     });
   });

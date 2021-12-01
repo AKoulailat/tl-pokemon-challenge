@@ -34,38 +34,22 @@ app.get('/pokemon/:pokemon', async (req, res) => {
 
   if (!requestedPokemon) {
     return res.send({
-      error: 'You must provide a Pokemon name in the URL',
+      error: 'You must provide a Pokemon name',
     });
   }
 
   try {
-    const [pokemonError, pokemonData] = await pokemon(requestedPokemon);
+    // Get the description of the Pokemon
+    const pokemonData = await pokemon(requestedPokemon);
+    // Translating the description from English to Shakespearean
+    const shakespeareTranslated = await shakespeare(pokemonData);
 
-    if (pokemonError) {
-      return res.send({ error: pokemonError });
-    }
-
-    let firstEnglishDescription;
-    // Loop over objects and return first object where language is English
-    for (let i = 0; i < pokemonData.length; i += 1) {
-      if (pokemonData[i].language.name === 'en') {
-        // Assign Pokemon description to variable and break out of loop
-        firstEnglishDescription = (JSON.stringify(pokemonData[i].flavor_text, null, ' '));
-        break;
-      }
-    }
-
-    const [shakespeareError, shakespeareTranslated] = await shakespeare(firstEnglishDescription);
-
-    if (shakespeareError) {
-      return res.send({ error: shakespeareError });
-    }
     res.send({
       requestedPokemon,
       shakespeareTranslated,
     });
   } catch (e) {
-    res.status(404).send();
+    res.send({ error: e.message });
   }
 });
 

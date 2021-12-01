@@ -29,8 +29,8 @@ app.get('', (req, res) => {
 });
 
 // Pokemon Directory
-app.get('/pokemon/*', (req, res) => {
-  const requestedPokemon = req.params[0];
+app.get('/pokemon/:pokemon', async (req, res) => {
+  const requestedPokemon = req.params.pokemon;
 
   if (!requestedPokemon) {
     return res.send({
@@ -38,20 +38,35 @@ app.get('/pokemon/*', (req, res) => {
     });
   }
 
-  pokemon(requestedPokemon, (pokemonError, pokemonData) => {
+  try {
+    const [pokemonError, pokemonData] = await pokemon(requestedPokemon);
+
     if (pokemonError) {
       return res.send({ error: pokemonError });
     }
-    shakespeare(pokemonData, (shakespeareError, shakespeareTranslated) => {
-      if (shakespeareError) {
-        return res.send({ error: shakespeareError });
+
+    let firstEnglishDescription;
+    // Loop over objects and return first object where language is English
+    for (let i = 0; i < pokemonData.length; i += 1) {
+      if (pokemonData[i].language.name === 'en') {
+        // Assign Pokemon description to variable and break out of loop
+        firstEnglishDescription = (JSON.stringify(pokemonData[i].flavor_text, null, ' '));
+        break;
       }
-      res.send({
-        requestedPokemon,
-        shakespeareTranslated,
-      });
+    }
+
+    const [shakespeareError, shakespeareTranslated] = await shakespeare(firstEnglishDescription);
+
+    if (shakespeareError) {
+      return res.send({ error: shakespeareError });
+    }
+    res.send({
+      requestedPokemon,
+      shakespeareTranslated,
     });
-  });
+  } catch (e) {
+    res.status(404).send();
+  }
 });
 
 // Unknown Directory Error Page

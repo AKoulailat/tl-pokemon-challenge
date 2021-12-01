@@ -13,7 +13,7 @@ pokemonForm.addEventListener('submit', (e) => {
       messageTwo.textContent = '';
       if (data.error) {
         // Display error if error occurs
-        messageOne.textContent = `Error${data.error}`;
+        messageOne.textContent = `Error: ${data.error}`;
       } else {
         // Otherwise display the Pokemon name and description
         messageOne.textContent = `Name: ${data.requestedPokemon}`;
